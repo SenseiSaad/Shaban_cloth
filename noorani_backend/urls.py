@@ -40,6 +40,8 @@ urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 # Catch-all for frontend files in nf-site
 # This matches any path that DOES NOT start with admin, api, static, or media
-urlpatterns += [
-    re_path(r'^(?!(admin|api|static|media))(?P<path>.*)$', serve, {'document_root': settings.STATICFILES_DIRS[0]}),
-]
+import os
+if not 'RENDER' in os.environ:
+    urlpatterns += [
+        re_path(r'^(?!(admin|api|static|media))(?P<path>.*)$', serve, {'document_root': settings.STATICFILES_DIRS[0]}),
+    ]

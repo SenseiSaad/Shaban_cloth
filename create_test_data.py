@@ -2,6 +2,7 @@ import os
 import django
 from django.core.files.base import ContentFile
 import urllib.request
+import json
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'noorani_backend.settings')
 django.setup()
@@ -11,7 +12,7 @@ from core.models import Category, Product, Order
 # 1. Create a Category
 category, created = Category.objects.get_or_create(
     name="Test Category",
-    defaults={'description': "This is an automated test category to verify everything works."}
+    defaults={'slug': "test-category"}
 )
 
 if created:
@@ -23,11 +24,14 @@ try:
 except Product.DoesNotExist:
     product = Product(
         name="Render Test Product",
-        description="A beautiful piece of test fabric validating that your Cloudinary storage and Netlify connection are operational! Buy this right now.",
         price=1999.00,
         category=category,
-        stock=50,
-        is_featured=True
+        description="A beautiful piece of test fabric validating that your Cloudinary storage and Netlify connection are operational! Buy this right now.",
+        badge="new",
+        stock_status="In Stock",
+        availability=50,
+        rating=5,
+        reviews_count=10
     )
     
     # Download a placeholder image from an online service
@@ -39,7 +43,7 @@ except Product.DoesNotExist:
         image_content = response.read()
         
         # Save placeholder to Cloudinary via Django storage mechanism
-        product.image.save("test_fabric_image.jpg", ContentFile(image_content))
+        product.img.save("test_fabric_image.jpg", ContentFile(image_content))
         print("Image uploaded and saved successfully.")
     except Exception as e:
         print(f"Image upload skipped or failed: {e}")
@@ -49,13 +53,12 @@ except Product.DoesNotExist:
 if not Order.objects.filter(customer_name="Test Customer Name").exists():
     Order.objects.create(
         customer_name="Test Customer Name",
+        email="test@example.com",
         phone="03001234567",
         address="123 Render Avenue, Test City",
-        total_amount=1999.00,
+        total_price=1999.00,
         status='Pending',
-        cart_data={
-            "items": [{"id": product.id, "name": product.name, "price": 1999.00, "quantity": 1}]
-        }
+        cart_items=json.dumps([{"id": product.id, "name": product.name, "price": 1999.00, "quantity": 1}])
     )
     print("Test Order created successfully.")
 

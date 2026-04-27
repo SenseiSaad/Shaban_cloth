@@ -37,6 +37,8 @@ ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '127.0.0.1,localhost').split(','
 
 INSTALLED_APPS = [
     'jazzmin',  # Must be before admin
+    'cloudinary_storage',
+    'cloudinary',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -208,3 +210,10 @@ JAZZMIN_UI_TWEAKS = {
         "success": "btn-outline-success"
     }
 }
+
+# Cloudinary Storage Configuration
+# If CLOUDINARY_URL format is set in Render env: cloudinary://API_KEY:API_SECRET@CLOUD_NAME
+import os
+if 'CLOUDINARY_URL' in os.environ:
+    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+    # Optional: ensure we don't try storing static files there implicitly unless desired

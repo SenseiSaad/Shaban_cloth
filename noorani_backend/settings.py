@@ -66,7 +66,7 @@ ROOT_URLCONF = 'noorani_backend.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR.parent / 'nf-site'],
+        'DIRS': [BASE_DIR / 'templates'] if 'RENDER' in os.environ else [BASE_DIR.parent / 'nf-site', BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -150,6 +150,7 @@ JAZZMIN_SETTINGS = {
     "site_header": "Noorani Fabrics",
     "site_brand": "Noorani Fabrics",
     "site_logo": None,
+    "site_url": "https://nooraniclothes.netlify.app",
     "welcome_sign": "Welcome to Noorani Fabrics Dashboard",
     "copyright": "Noorani Fabrics Ltd",
     "search_model": ["core.Product"],

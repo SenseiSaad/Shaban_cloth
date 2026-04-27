@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Noorani Fabrics - Backend Server</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            max-width: 500px;
+        }
+        h1 {
+            color: #d11234; /* maroon matching Jazzmin theme */
+            margin-bottom: 10px;
+        }
+        p {
+            font-size: 16px;
+            line-height: 1.5;
+            color: #555;
+            margin-bottom: 30px;
+        }
+        a.btn {
+            display: inline-block;
+            background: #d11234;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+        a.btn:hover {
+            background: #a30e28;
+        }
+        .info {
+            margin-top: 30px;
+            font-size: 14px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Noorani Fabrics API</h1>
+        <p>This is the central backend server powering the Noorani Fabrics platform. It manages your products, categories, orders, and connects Netlify to your PostgreSQL database.</p>
+        <a href="/admin/" class="btn">Go to Secure Admin Panel</a>
+        <div class="info">Please note: The public frontend storefront is hosted on Netlify.</div>
+    </div>
+
+</body>
+</html>

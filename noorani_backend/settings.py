@@ -128,7 +128,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR.parent / 'nf-site']
+import os
+if not 'RENDER' in os.environ:
+    STATICFILES_DIRS = [BASE_DIR.parent / 'nf-site']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 MEDIA_URL = '/media/'
@@ -217,3 +219,6 @@ import os
 if 'CLOUDINARY_URL' in os.environ:
     DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
     # Optional: ensure we don't try storing static files there implicitly unless desired
+
+# Fix for django-cloudinary-storage expecting STATICFILES_STORAGE in newer Django versions
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'

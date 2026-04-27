@@ -24,14 +24,13 @@ try:
 except Product.DoesNotExist:
     product = Product(
         name="Render Test Product",
-        price=1999.00,
         category=category,
-        description="A beautiful piece of test fabric validating that your Cloudinary storage and Netlify connection are operational! Buy this right now.",
+        price=1999.00,
+        desc="A beautiful piece of test fabric validating that your Cloudinary storage and Netlify connection are operational! Buy this right now.",
         badge="new",
-        stock_status="In Stock",
-        availability=50,
-        rating=5,
-        reviews_count=10
+        stock=50,
+        is_trending=True,
+        is_featured=True,
     )
     
     # Download a placeholder image from an online service
@@ -56,9 +55,9 @@ if not Order.objects.filter(customer_name="Test Customer Name").exists():
         email="test@example.com",
         phone="03001234567",
         address="123 Render Avenue, Test City",
-        total_price=1999.00,
+        total_amount=1999.00,
         status='Pending',
-        cart_items=json.dumps([{"id": product.id, "name": product.name, "price": 1999.00, "quantity": 1}])
+        items_json=json.dumps([{"id": product.id, "name": product.name, "price": 1999.00, "quantity": 1}])
     )
     print("Test Order created successfully.")
 

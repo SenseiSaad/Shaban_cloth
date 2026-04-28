@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Category, Product, Order
+from .models import Category, Product, Order, OrderItem, Cart, CartItem
 import json
 
 @admin.register(Category)
@@ -42,72 +42,59 @@ class ProductAdmin(admin.ModelAdmin):
         return "No Image"
     display_image.short_description = 'Preview'
 
+class OrderItemInline(admin.TabularInline):
+    model = OrderItem
+    extra = 0
+    readonly_fields = ('product_name_snapshot', 'price_snapshot', 'quantity', 'size', 'color')
+    can_delete = False
+
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('id', 'customer_name', 'phone', 'items_summary', 'address', 'total_amount', 'status', 'status_badge')
+    list_display = ('order_id', 'get_full_name', 'phone_number', 'status', 'total_price', 'status_badge', 'created_at')
     list_filter = ('status', 'payment_method', 'created_at')
     list_editable = ('status',)
-    search_fields = ('customer_name', 'phone', 'address')
-    readonly_fields = ('created_at', 'formatted_items')
-    
-    def items_summary(self, obj):
-        try:
-            items = json.loads(obj.items_json)
-            summary = []
-            for item in items:
-                p = Product.objects.filter(id=item['id']).first()
-                name = p.name if p else f"ID:{item['id']}"
-                summary.append(f"{name} ({item.get('qty', 1)}x {item.get('size', '').upper()})")
-            return ", ".join(summary)
-        except:
-            return "Error loading items"
-    items_summary.short_description = "Products Ordered"
-    
+    search_fields = ('order_id', 'customer_name', 'phone_number', 'first_name', 'last_name', 'email')
+    readonly_fields = ('order_id', 'created_at', 'updated_at', 'total_price')
+    inlines = [OrderItemInline]
+
     fieldsets = (
         ('Customer Info', {
-            'fields': ('customer_name', 'email', 'phone', 'address')
+            'fields': (('first_name', 'last_name'), 'email', 'phone_number', 'full_address')
         }),
         ('Order Details', {
-            'fields': (('total_amount', 'status', 'payment_method'),)
-        }),
-        ('Purchased Items', {
-            'fields': ('formatted_items',),
-            'description': 'Customer ne jo suits kharide hain unki details yahan hain.'
+            'fields': (('order_id', 'total_price'), ('status', 'payment_method'))
         }),
         ('Timestamps', {
-            'fields': ('created_at',),
+            'fields': ('created_at', 'updated_at'),
         }),
     )
+
+    def get_full_name(self, obj):
+        return f"{obj.first_name} {obj.last_name}"
+    get_full_name.short_description = 'Customer Name'
 
     def status_badge(self, obj):
         colors = {
             'Pending': '#f39c12',
             'Confirmed': '#27ae60',
+            'Packed': '#8e44ad',
             'Shipped': '#2980b9',
             'Delivered': '#2c3e50',
             'Cancelled': '#c0392b',
         }
-        color = colors.get(obj.status, '#000')
+        color = colors.get(obj.status.split(' ')[0], '#000')  # splitting to handle emojis safely if they exist
         return format_html(
             '<span style="background: {}; color: #fff; padding: 4px 10px; border-radius: 20px; font-weight: bold; font-size: 11px;">{}</span>',
             color, obj.get_status_display()
         )
     status_badge.short_description = "Status"
 
-    def formatted_items(self, obj):
-        try:
-            items = json.loads(obj.items_json)
-            html = '<table style="width:100%; border-collapse: collapse; background: #f9f9f9; border-radius: 8px; overflow: hidden;">'
-            html += '<tr style="background: #eee; text-align: left;"><th style="padding: 8px;">Product</th><th style="padding: 8px;">Size</th><th style="padding: 8px;">Qty</th></tr>'
-            for item in items:
-                # Get product name from ID if possible (optional but good)
-                p = Product.objects.filter(id=item['id']).first()
-                name = p.name if p else f"Product ID: {item['id']}"
-                html += f'<tr><td style="padding: 8px; border-top: 1px solid #ddd;">{name}</td>'
-                html += f'<td style="padding: 8px; border-top: 1px solid #ddd;">{item["size"].upper()}</td>'
-                html += f'<td style="padding: 8px; border-top: 1px solid #ddd;">{item["qty"]}</td></tr>'
-            html += '</table>'
-            return format_html(html)
-        except:
-            return obj.items_json
-    formatted_items.short_description = "Items Ordered"
+class CartItemInline(admin.TabularInline):
+    model = CartItem
+    extra = 0
+    readonly_fields = ('product', 'quantity', 'size', 'color')
+
+@admin.register(Cart)
+class CartAdmin(admin.ModelAdmin):
+    list_display = ('id', 'session_key', 'created_at', 'updated_at')
+    inlines = [CartItemInline]

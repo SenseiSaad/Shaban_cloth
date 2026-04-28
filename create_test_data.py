@@ -7,7 +7,7 @@ import json
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'noorani_backend.settings')
 django.setup()
 
-from core.models import Category, Product, Order
+from core.models import Category, Product, Order, OrderItem
 
 # 1. Create a Category
 category, created = Category.objects.get_or_create(
@@ -49,15 +49,24 @@ except Product.DoesNotExist:
         product.save()
 
 # 3. Create a Test Order
-if not Order.objects.filter(customer_name="Test Customer Name").exists():
-    Order.objects.create(
-        customer_name="Test Customer Name",
+if not Order.objects.filter(first_name="Test", last_name="Customer Name").exists():
+    order = Order.objects.create(
+        first_name="Test",
+        last_name="Customer Name",
         email="test@example.com",
-        phone="03001234567",
-        address="123 Render Avenue, Test City",
-        total_amount=1999.00,
-        status='Pending',
-        items_json=json.dumps([{"id": product.id, "name": product.name, "price": 1999.00, "quantity": 1}])
+        phone_number="03001234567",
+        full_address="123 Render Avenue, Test City",
+        total_price=1999.00,
+        status='Pending'
+    )
+    OrderItem.objects.create(
+        order=order,
+        product=product,
+        product_name_snapshot=product.name,
+        price_snapshot=1999.00,
+        quantity=1,
+        size="M",
+        color="Blue"
     )
     print("Test Order created successfully.")
 
